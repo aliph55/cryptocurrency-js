@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import Coins from "./Components/Coins";
+import Navbar from "./Components/Navbar";
+import { Route, Routes } from "react-router-dom";
+import Coin from "./routes/Coin";
 
-function App() {
+const App = () => {
+  const [coins, setCoins] = useState([]);
+
+  const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
+  useEffect(() => {
+    axios
+      .get(url)
+      .then((responce) => {
+        setCoins(responce.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route element={<Coins coins={coins} />} path="/" />
+        <Route path="/coin/" element={<Coin />}>
+          <Route path=":coinId" element={<Coin />} />
+        </Route>
+      </Routes>
+    </>
   );
-}
+};
 
 export default App;
